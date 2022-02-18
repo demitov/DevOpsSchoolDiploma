@@ -29,7 +29,9 @@ Detailed requirements/criteria:
 \*\* Be careful with the Cloud resource usage and check the costs for not to exceed limits! Switch off your machines when you are not using them!
 
 ## Application
+
 Develop a simple (lightweight) 3-tire application (front-end, back-end, database).
+
 Back-end (collects data) must:
 1. Retrieve a portion of data from API (see in your Variant) and store it in a database
 2. Update data on demand
