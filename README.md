@@ -25,6 +25,7 @@ Detailed requirements/criteria:
 | Cloud and Cost efficiency\*\* | Cloud resources and services must be used for the task. Report about the Cloud resource usage and the cost must be provided in the presentation. It should be efficient (minimal) – in accordance to the solving tasks. You can choose any cloud provider taking into account possible extra costs for the resources. | Cloud |
 
 \* Nice to have – optional
+
 \*\* Be careful with the Cloud resource usage and check the costs for not to exceed limits! Switch off your machines when you are not using them!
 
 ## Application
