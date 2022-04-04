@@ -1,3 +1,14 @@
+# mysql database dir
+src/database/data
+
+# MacOs files
+.DS_Store
+
+# terraform files
+.terraform*
+*.tfstate
+*.tfstate.*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -13,6 +24,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+.idea
+include/
 eggs/
 .eggs/
 lib/
