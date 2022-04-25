@@ -4,12 +4,13 @@ import requests
 from datetime import datetime
 import boto3
 
-CLIENT_ID = os.environ['CLIENT_ID']
+API_KEY     = os.environ['API_KEY']
+CLIENT_ID   = os.environ['CLIENT_ID']
 RESULT_DATA = list()
 
-client = boto3.client('dynamodb')
-dynamodb = boto3.resource('dynamodb')
-table_name = 'v13'
+client      = boto3.client('dynamodb')
+dynamodb    = boto3.resource('dynamodb')
+table_name  = 'v13'
 
 # Get data from API
 def get_data(endpoint: str, parameters: dict):
@@ -97,9 +98,6 @@ def get_list():
     return table.scan()
 
 def response_proxy(data):
-	'''
-	For HTTP status codes, you can take a look at https://httpstatuses.com/
-	'''
 	response = {}
 	response["isBase64Encoded"] = False
 	response["statusCode"] = data["statusCode"]
@@ -114,21 +112,29 @@ def request_proxy(data):
     request = data
     if data["body"]:
         request["body"] = json.loads(str(data["body"]).replace("'", "\""))
-    return request["body"]["action"]
+    return request
 
 
 def lambda_handler(event, context):
+    # Check API key
+    if request_proxy(event)["headers"]["x-api-key"] != API_KEY:
+        return {
+        "statusCode": 401,
+        "isBase64Encoded": "false",
+        "body": json.dumps({"statusCode": 401, "data": "API key is missing or invalid"})
+    }
+
     init_table()
     response = {}
     message = ''
 
-    if request_proxy(event) == 'update':
+    if request_proxy(event)["body"]["action"] == 'update':
         get_stations()
         get_avaliable_times()
         update_table()
-        message = 'update'
+        message = json.dumps(get_list(), ensure_ascii=False, default=str)
 
-    if request_proxy(event) == 'getlist':
+    if request_proxy(event)["body"]["action"] == 'getlist':
         message = json.dumps(get_list(), ensure_ascii=False, default=str)
 
     return {

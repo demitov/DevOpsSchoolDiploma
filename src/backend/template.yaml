@@ -11,20 +11,6 @@ Description: SAM template for deploying Lambda function.
 
 Resources:
 
-# Build the API Gateway and setup an API Key
-  ApiGatewayEndpoint:
-    Type: 'AWS::Serverless::Api'
-    Description: Gateway API
-    Properties:
-      StageName: prod
-      EndpointConfiguration:
-        Type: REGIONAL
-      Auth:
-        ApiKeyRequired: true
-        UsagePlan:
-          CreateUsagePlan: PER_API
-          UsagePlanName: GatewayAuthorization
-
   # Setup the Lambda Function
   ServerlessFunction:
     Type: 'AWS::Serverless::Function'
@@ -36,14 +22,29 @@ Resources:
       Description:
       MemorySize: 128
       Timeout: 45
-      Events:
-        HttpApiAnyPathPostMethod:
-          Type: Api
-          Properties:
-            RestApiId:
-              Ref: ApiGatewayEndpoint
-            Path: /
-            Method: POST
+      # Environment:
+      #   Variables:
+      #     API_KEY: !Ref ApiKey
+      #     CLIENT_ID: !Ref ClientId
+      # sam package \
+        # --template-file template.yml \
+        # --s3-bucket demitov-v13 \
+        # --output-template-file packaged.yml
+      # sam deploy \
+        # --template-file packaged.yml \
+        # --stack-name STACK_NAME \
+        # --capabilities CAPABILITY_IAM \
+        # --parameter-overrides ApiKey=${API_KEY} ClientId=${CLIENT_ID}
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - https://*
+          AllowMethods:
+            - POST
+          AllowHeaders:
+            - X-Api-Key
+            - Content-Type
       Policies:
         - AmazonDynamoDBFullAccess
         - AWSLambdaVPCAccessExecutionRole
@@ -55,9 +56,7 @@ Resources:
               Resource: "*"
 
 Outputs:
-  ApiGateway:
-    Description: "The URL is:"
-    Value: !Sub "https://${ApiGatewayEndpoint}.execute-api.${AWS::Region}.amazonaws.com/prod/"
-  ApiKey:
-    Description: "You can find your API Key in the AWS console: (Put in the request HEADER as 'x-api-key')"
-    Value: !Sub "https://console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/api-keys/${ApiGatewayEndpointApiKey}"
+  ServerlessFunctionEndpoint:
+    Description: "Lambda function URL Endpoint"
+    Value:
+      Fn::GetAtt: ServerlessFunctionUrl.FunctionUrl
