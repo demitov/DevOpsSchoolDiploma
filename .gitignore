@@ -1,8 +1,16 @@
-# mysql database dir
-src/database/data
+# python packages
+certifi*
+charset_normalizer*
+greenlet*
+idna*
+requests*
+urllib3*
 
 # MacOs files
 .DS_Store
+
+# AWS SAM config file
+samconfig.toml
 
 # terraform files
 .terraform*
