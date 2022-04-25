@@ -1,12 +1,10 @@
+import os
 import json
 import requests
 from datetime import datetime
 import boto3
-# from threading import Thread
-#import os
 
-# CLIENT_ID = os.environ['CLIENT_ID']
-CLIENT_ID = 'fc172899-0d19-40dc-9a1f-88949b778e48'
+CLIENT_ID = os.environ['CLIENT_ID']
 RESULT_DATA = list()
 
 client = boto3.client('dynamodb')
