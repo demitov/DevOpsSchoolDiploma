@@ -2,6 +2,7 @@ import json
 import requests
 from datetime import datetime
 import boto3
+# from threading import Thread
 #import os
 
 # CLIENT_ID = os.environ['CLIENT_ID']
@@ -10,8 +11,7 @@ RESULT_DATA = list()
 
 client = boto3.client('dynamodb')
 dynamodb = boto3.resource('dynamodb')
-
-table_name = 'demitov-v13'
+table_name = 'v13'
 
 # Get data from API
 def get_data(endpoint: str, parameters: dict):
@@ -90,17 +90,51 @@ def update_table():
                 },
             )
         except Exception as e:
-            print (e)
+            print ('Exception: ', e)
+            print (item )
+
+# get list from table
+def get_list():
+    table = dynamodb.Table(table_name)
+    return table.scan()
+
+def response_proxy(data):
+	'''
+	For HTTP status codes, you can take a look at https://httpstatuses.com/
+	'''
+	response = {}
+	response["isBase64Encoded"] = False
+	response["statusCode"] = data["statusCode"]
+	response["headers"] = {}
+	if "headers" in data:
+		response["headers"] = data["headers"]
+	response["body"] = json.dumps(data["body"])
+	return response
+
+def request_proxy(data):
+    request = {}
+    request = data
+    if data["body"]:
+        request["body"] = json.loads(str(data["body"]).replace("'", "\""))
+    return request["body"]["action"]
 
 
 def lambda_handler(event, context):
     init_table()
-    get_stations()
-    get_avaliable_times()
-    update_table()
+    response = {}
+    message = ''
 
-    message = 'From API Gateway {} {} {}!'.format(event['type'], event['authorizationToken'], event['methodArn'])
+    if request_proxy(event) == 'update':
+        get_stations()
+        get_avaliable_times()
+        update_table()
+        message = 'update'
+
+    if request_proxy(event) == 'getlist':
+        message = json.dumps(get_list(), ensure_ascii=False, default=str)
+
     return {
-        'statusCode': 200,
-        'message' : message
+        "statusCode": 200,
+        "isBase64Encoded": "false",
+        "body": json.dumps({"statusCode": 200, "data": message})
     }

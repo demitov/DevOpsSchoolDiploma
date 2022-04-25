@@ -32,6 +32,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+etc/
 .idea
 include/
 eggs/
@@ -40,6 +41,7 @@ lib/
 lib64/
 parts/
 sdist/
+share/
 var/
 wheels/
 share/python-wheels/

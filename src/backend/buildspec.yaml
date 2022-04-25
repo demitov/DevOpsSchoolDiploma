@@ -1,0 +1,17 @@
+#------------------------------------
+# file: ./src/backend/buildspec.yaml
+#
+# Maintainer: Dmitrii Demitov
+# email: dmitrii_demitov@epam.com
+#------------------------------------
+
+version: 0.2
+phases:
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Entered the build phase ...
+      # Package SAM template
+      - sam package --template-file template.yaml --s3-bucket demitov-v13 --output-template-file packaged.yaml
+      # Deploy packaged SAM template
+      - sam deploy --template-file packaged.yaml --stack-name demitov-v13-sam-deployment --capabilities CAPABILITY_IAM
