@@ -1,5 +1,5 @@
 #------------------------------------
-# file: ./IaC/vpc.tf
+# file: ./IaC/AWS/vpc.tf
 #
 # Maintainer: Dmitrii Demitov
 # email: demitov@gmail.com

@@ -1,5 +1,5 @@
 #------------------------------------
-# file: ./IaC/variable.tf
+# file: ./IaC/AWS/variable.tf
 #
 # Maintainer: Dmitrii Demitov
 # email: demitov@gmail.com

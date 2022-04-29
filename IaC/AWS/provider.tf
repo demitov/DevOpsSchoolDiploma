@@ -1,5 +1,5 @@
 #------------------------------------
-# file: ./IaC/provider.tf
+# file: ./IaC/AWS/provider.tf
 #
 # Maintainer: Dmitrii Demitov
 # email: demitov@gmail.com

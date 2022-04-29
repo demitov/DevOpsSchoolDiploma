@@ -1,5 +1,5 @@
 #------------------------------------
-# file: ./IaC/backend/main.tf
+# file: ./IaC/AWS/backend/main.tf
 #
 # Maintainer: Dmitrii Demitov
 # email: demitov@gmail.com

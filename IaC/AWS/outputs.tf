@@ -1,5 +1,5 @@
 #------------------------------------
-# file: ./IaC/outputs.tf
+# file: ./IaC/AWS/outputs.tf
 #
 # Maintainer: Dmitrii Demitov
 # email: demitov@gmail.com
