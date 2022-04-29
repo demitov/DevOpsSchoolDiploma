@@ -6,11 +6,11 @@ import boto3
 
 API_KEY     = os.environ['API_KEY']
 CLIENT_ID   = os.environ['CLIENT_ID']
+TABLE_NAME  = 'v13-' + os.environ['STAGE_NAME']
 RESULT_DATA = list()
 
 client      = boto3.client('dynamodb')
 dynamodb    = boto3.resource('dynamodb')
-table_name  = 'v13'
 
 # Get data from API
 def get_data(endpoint: str, parameters: dict):
@@ -63,9 +63,9 @@ def get_avaliable_times():
 def init_table():
     existing_tables = client.list_tables()['TableNames']
 
-    if table_name not in existing_tables:
+    if TABLE_NAME not in existing_tables:
         table = client.create_table(
-            TableName=table_name,
+            TableName=TABLE_NAME,
             KeySchema=[{'AttributeName': 'sourceId', 'KeyType': 'HASH'}],
             AttributeDefinitions=[{'AttributeName': 'sourceId', 'AttributeType': 'S'}],
             ProvisionedThroughput={'ReadCapacityUnits':10, 'WriteCapacityUnits':10}
@@ -73,7 +73,9 @@ def init_table():
 
 # Update data in table
 def update_table():
-    table = dynamodb.Table(table_name)
+    table = dynamodb.Table(TABLE_NAME)
+    init_table()
+
     for item in RESULT_DATA:
         try:
             table.update_item(
@@ -94,8 +96,17 @@ def update_table():
 
 # get list from table
 def get_list():
-    table = dynamodb.Table(table_name)
-    return table.scan()
+    table = dynamodb.Table(TABLE_NAME)
+    try:
+        return table.scan()
+    except client.exceptions.ResourceNotFoundException:
+        return []
+
+
+def clear_db():
+    table = dynamodb.Table(TABLE_NAME)
+    return table.delete()
+
 
 def response_proxy(data):
 	response = {}
@@ -133,6 +144,9 @@ def lambda_handler(event, context):
         get_avaliable_times()
         update_table()
         message = json.dumps(get_list(), ensure_ascii=False, default=str)
+
+    if request_proxy(event)["body"]["action"] == 'clear':
+        message = json.dumps(clear_db(), ensure_ascii=False, default=str)
 
     if request_proxy(event)["body"]["action"] == 'getlist':
         message = json.dumps(get_list(), ensure_ascii=False, default=str)
