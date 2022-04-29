@@ -2,26 +2,21 @@
 # file: ./IaC/backend/main.tf
 #
 # Maintainer: Dmitrii Demitov
-# email: dmitrii_demitov@epam.com
+# email: demitov@gmail.com
 #------------------------------------
 
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.1.0"
+      version = "4.11.0"
     }
   }
   required_version = "~>1.0"
 }
 
 provider "aws" {
-  region = "eu-central-1"
-  default_tags {
-    tags = {
-      Owner = "dmitrii_demitov@epam.com"
-    }
-  }
+  region = "eu-west-3"
 }
 
 # Create S3 bucket

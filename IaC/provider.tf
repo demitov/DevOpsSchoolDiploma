@@ -1,8 +1,8 @@
 #------------------------------------
-# file : ./IaC/provider.tf
+# file: ./IaC/provider.tf
 #
 # Maintainer: Dmitrii Demitov
-# email: dmitrii_demitov@epam.com
+# email: demitov@gmail.com
 #------------------------------------
 
 provider "aws" {
@@ -15,22 +15,24 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Owner = "dmitrii_demitov@epam.com"
+      Owner   = "demitov@gmail.com"
+      Project = "Diploma V13"
     }
   }
 }
+
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.1.0"
+      version = "4.11.0"
     }
   }
   backend "s3" {
     bucket  = "demitov-v13"
     encrypt = true
     key     = "terraform.tfstate"
-    region  = "eu-central-1"
+    region  = "eu-west-3"
   }
   required_version = "~>1.0"
 }

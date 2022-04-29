@@ -2,7 +2,7 @@
 # file: ./IaC/main.tf
 #
 # Maintainer: Dmitrii Demitov
-# email: dmitrii_demitov@epam.com
+# email: demitov@gmail.com
 #------------------------------------
 
 # Get AMI for last Amazon Linux EC2
