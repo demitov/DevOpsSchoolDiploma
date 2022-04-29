@@ -27,7 +27,7 @@ variable "tags" {
   description = "Default tags"
   type        = map(any)
   default = {
-    Owner   = "dmitrii_demitov@epam.com"
+    Owner   = "demitov@gmail.com"
     Project = "Diploma V13"
   }
 }

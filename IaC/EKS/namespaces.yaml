@@ -1,0 +1,21 @@
+#------------------------------------
+# file: ./IaC/EKS/01_namespaces.yaml
+#
+# Maintainer: Dmitrii Demitov
+# email: demitov@gmail.com
+#------------------------------------
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jenkins
