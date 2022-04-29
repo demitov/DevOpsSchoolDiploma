@@ -2,9 +2,9 @@ import os
 import json
 import requests
 import pandas as pd
-from dash import Dash, dash_table, html, dcc
+from dash import Dash, dash_table, html, Input, Output, callback_context
 
-API_KEY = os.environ['API_KEY']
+API_KEY  = os.environ['API_KEY']
 ENDPOINT = os.environ['ENDPOINT']
 
 app = Dash(__name__)
@@ -12,10 +12,10 @@ columns = ['sourceId', 'sourceName', 'validFrom']
 
 
 # Get data from backend
-def get_data():
+def get_data(action):
     endpoint = ENDPOINT
     headers = {"x-api-key": API_KEY, 'content-type': 'application/json'}
-    body = {'action': 'getlist'}
+    body = {'action': action}
 
     r = requests.post(endpoint, data=json.dumps(body), headers=headers)
     rjson = r.json()
@@ -28,7 +28,13 @@ def get_data():
         print('Reason: %s' % json['error']['reason'])
 
 
-df = pd.DataFrame(get_data())
+if not get_data('getlist'):
+    df = pd.DataFrame(get_data('update'))
+    print('run update')
+else:
+    df = pd.DataFrame(get_data('getlist'))
+    print('run getlist')
+
 df['validFrom'] = df['validFrom'].astype(str).astype(int)
 df = df.nsmallest(10, 'validFrom')
 df['validFrom'] = pd.to_datetime(df['validFrom'], unit='s').apply(lambda x: x.date())
@@ -36,20 +42,61 @@ df['validFrom'] = pd.to_datetime(df['validFrom'], unit='s').apply(lambda x: x.da
 app.layout = html.Div([
         html.H1(children='Demitov variant 13'),
         html.Div(children='''Top 10 Norway weather stations which measures wind from direction.'''),
-        html.Button('Update', id='buttom-update', n_clicks=0),
-        html.Button('Get data', id='buttom-getdata', n_clicks=0),
-        html.Button('Test', id='buttom-test', n_clicks=0),
-        dash_table.DataTable(
-            style_data={
-                'whiteSpace': 'normal',
-                'height': 'auto',
-                'maxWidth': 0
-            },
-            data=df.to_dict('records'),
-            columns=[{"name": i, "id": i} for i in df[columns].columns]
-        )
+        html.Table([
+            html.Tr([
+                html.Button('Clear DB', id='button-clear', n_clicks=0),
+                html.Button('Update DB', id='button-update', n_clicks=0),
+                html.Button('Get data', id='button-getdata', n_clicks=0),
+                html.Button('Test frontend', id='button-test', n_clicks=0),
+                html.Div(id='container-buttons')
+            ]),
+            html.Tr([
+                html.Td(
+                    dash_table.DataTable(
+                        id='data-table',
+                        style_data={
+                            'whiteSpace': 'normal',
+                            'height': 'auto',
+                            'minWidth': '200px'
+                        },
+                        data=df.to_dict('records'),
+                        columns=[{"name": i, "id": i} for i in df[columns].columns],
+                        fill_width=False
+                    )
+                ),
+                html.Td(children=
+                    html.H1(children=''), # add icons
+                    style={'textAlign': 'center'},
+                )
+            ])
+        ])
 ])
 
 
+@app.callback(
+            [Output('container-buttons', 'children')],
+            [Input('button-clear', 'n_clicks'), Input('button-update', 'n_clicks'),
+            Input('button-getdata', 'n_clicks'), Input('button-test', 'n_clicks')]
+            )
+def click_buttons(btn_clr, btn_upd, btn_get, btn_tst):
+    changed_id = [p['prop_id'] for p in callback_context.triggered][0]
+    if 'button-clear' in changed_id:
+        get_data('clear')
+        msg = 'CLEAR'
+    elif 'button-update' in changed_id:
+        get_data('update')
+        msg = 'UPDATE'
+    elif 'button-getdata' in changed_id:
+        get_data('getlist')
+        msg = 'GET DATA'
+    elif 'button-test' in changed_id:
+        # run subprocess
+        msg = 'TEST'
+    else:
+        msg = 'None of the buttons have been clicked yet'
+    return html.Div(msg)
+
+
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0')
+    # app.run_server(debug=True, host='0.0.0.0')
+    app.run_server(debug=True)
