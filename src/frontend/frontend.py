@@ -79,7 +79,7 @@ app.layout = html.Div([
             Input('button-update', 'n_clicks'),
             Input('button-getdata', 'n_clicks')
             )
-def click_buttons(btn_clr, btn_upd, btn_get, btn_tst):
+def click_buttons(btn_clr, btn_upd, btn_get):
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if 'button-clear' in changed_id:
         get_data('clear')
