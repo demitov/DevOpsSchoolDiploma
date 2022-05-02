@@ -21,7 +21,8 @@ def get_data(action):
     rjson = r.json()
     if r.status_code == 200:
         data = rjson['data']
-        return json.loads(data)['Items']
+        print(data)
+        return json.loads(data) #['Items']
     else:
         print('Error! Returned status code %s' % r.status_code)
         print('Message: %s' % json['error']['message'])
@@ -29,10 +30,10 @@ def get_data(action):
 
 
 if not get_data('getlist'):
-    df = pd.DataFrame(get_data('update'))
+    df = pd.DataFrame(get_data('update')['Items'])
     print('run update')
 else:
-    df = pd.DataFrame(get_data('getlist'))
+    df = pd.DataFrame(get_data('getlist')['Items'])
     print('run getlist')
 
 df['validFrom'] = df['validFrom'].astype(str).astype(int)
@@ -47,7 +48,6 @@ app.layout = html.Div([
                 html.Button('Clear DB', id='button-clear', n_clicks=0),
                 html.Button('Update DB', id='button-update', n_clicks=0),
                 html.Button('Get data', id='button-getdata', n_clicks=0),
-                html.Button('Test frontend', id='button-test', n_clicks=0),
                 html.Div(id='container-buttons')
             ]),
             html.Tr([
@@ -74,24 +74,22 @@ app.layout = html.Div([
 
 
 @app.callback(
-            [Output('container-buttons', 'children')],
-            [Input('button-clear', 'n_clicks'), Input('button-update', 'n_clicks'),
-            Input('button-getdata', 'n_clicks'), Input('button-test', 'n_clicks')]
+            Output('container-buttons', 'children'),
+            Input('button-clear', 'n_clicks'),
+            Input('button-update', 'n_clicks'),
+            Input('button-getdata', 'n_clicks')
             )
 def click_buttons(btn_clr, btn_upd, btn_get, btn_tst):
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if 'button-clear' in changed_id:
         get_data('clear')
-        msg = 'CLEAR'
+        msg = 'CLEARED'
     elif 'button-update' in changed_id:
         get_data('update')
-        msg = 'UPDATE'
+        msg = 'UPDATED'
     elif 'button-getdata' in changed_id:
         get_data('getlist')
-        msg = 'GET DATA'
-    elif 'button-test' in changed_id:
-        # run subprocess
-        msg = 'TEST'
+        msg = 'DATA GETTED'
     else:
         msg = 'None of the buttons have been clicked yet'
     return html.Div(msg)
